@@ -4,7 +4,6 @@ import json
 from pydantic import BaseModel
 from typing import Optional
 import PyPDF2
-import aiofiles
 import io
 
 import os
@@ -17,9 +16,10 @@ load_dotenv()
 
 app = FastAPI()
 
+# Update CORS to allow your Vercel deployment URL
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins or specify your Vercel URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,9 +82,10 @@ async def summarize(request: Request, file: UploadFile = File(None)):
         print("Text is too short or empty")
         raise HTTPException(status_code=400, detail="Text is too short or empty")
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    # Check for both environment variable names
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not api_key:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY not set")
+        raise HTTPException(status_code=500, detail="API key not set. Check environment variables.")
 
     gemini_client = GeminiClient(api_key)
     try:
@@ -153,3 +154,7 @@ async def read_pdf(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading PDF: {e}")
+
+# This is the handler that Vercel will use
+from mangum import Mangum
+handler = Mangum(app)
