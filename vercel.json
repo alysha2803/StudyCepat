@@ -2,24 +2,9 @@
   "version": 2,
   "builds": [
     { "src": "StudyCepat/package.json", "use": "@vercel/next" },
-    { "src": "main.py", "use": "@vercel/python" },
-    { "src": "GeminiClient.py", "use": "@vercel/python" },
-    { "src": "prompts.py", "use": "@vercel/python" }
+    { "src": "main.py", "use": "@vercel/python" }
   ],
-  "routes": [
-    {
-      "src": "/api/generate",
-      "dest": "main.py"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "main.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "StudyCepat/$1"
-    }
-  ],
+  "routes": [{ "src": "/api/(.*)", "dest": "main.py" }, { "src": "/(.*)", "dest": "StudyCepat/$1" }],
   "env": {
     "PYTHONPATH": "."
   }
