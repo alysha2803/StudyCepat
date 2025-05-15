@@ -157,4 +157,8 @@ async def read_pdf(file: UploadFile = File(...)):
 
 # This is the handler that Vercel will use
 from mangum import Mangum
-handler = Mangum(app)
+try:
+    handler = Mangum(app)
+except Exception as e:
+    print(f"Error initializing Mangum handler: {e}")
+    raise
